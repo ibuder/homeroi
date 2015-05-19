@@ -1,0 +1,2 @@
+SAT score data http://www.cde.ca.gov/ds/sp/ai/
+public school info http://www.cde.ca.gov/ds/si/ds/pubschls.asp
