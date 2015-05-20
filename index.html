@@ -13,18 +13,18 @@ html, body, #map {
   padding: 0;
 }
 
-.stations, .stations svg {
+.schools, .schools svg {
   position: absolute;
 }
 
-.stations svg {
-  width: 60px;
+.schools svg {
+  width: 120px;
   height: 20px;
   padding-right: 100px;
   font: 10px sans-serif;
 }
 
-.stations circle {
+.schools circle {
   fill: brown;
   stroke: black;
   stroke-width: 1.5px;
@@ -40,17 +40,17 @@ html, body, #map {
 var map = new google.maps.Map(d3.select("#map").node(), {
   zoom: 8,
   center: new google.maps.LatLng(37.76487, -122.41948),
-  mapTypeId: google.maps.MapTypeId.TERRAIN
+  mapTypeId: google.maps.MapTypeId.ROADMAP
 });
 
 // Load the station data. When the data comes back, create an overlay.
-d3.json("stations.json", function(data) {
+d3.json("sat_schools.json", function(data) {
   var overlay = new google.maps.OverlayView();
 
   // Add the container when the overlay is added to the map.
   overlay.onAdd = function() {
     var layer = d3.select(this.getPanes().overlayLayer).append("div")
-        .attr("class", "stations");
+        .attr("class", "schools");
 
     // Draw each marker as a separate SVG element.
     // We could use a single SVG, but what size would it have?
@@ -59,7 +59,7 @@ d3.json("stations.json", function(data) {
           padding = 10;
 
       var marker = layer.selectAll("svg")
-          .data(d3.entries(data))
+          .data(data)
           .each(transform) // update existing markers
         .enter().append("svg:svg")
           .each(transform)
@@ -76,10 +76,10 @@ d3.json("stations.json", function(data) {
           .attr("x", padding + 7)
           .attr("y", padding)
           .attr("dy", ".31em")
-          .text(function(d) { return d.key; });
+          .text(function(d) { return d.School; });
 
       function transform(d) {
-        d = new google.maps.LatLng(d.value[1], d.value[0]);
+        d = new google.maps.LatLng(d.Latitude, d.Longitude);
         d = projection.fromLatLngToDivPixel(d);
         return d3.select(this)
             .style("left", (d.x - padding) + "px")
