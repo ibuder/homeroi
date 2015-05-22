@@ -77,12 +77,16 @@ var tip = d3.tip()
   .attr('class', 'd3-tip')
   .offset([-10, 0])
   .html(function(d) {
-    return d.School + "<BR>Average SAT score: " + d.AVGSCR;
+    return d.School + "<BR>Average SAT score: " + d.AVGSCR + 
+      "<BR>Median home value: $" + d.homeValueIndex + 
+      '<img src="http://www.zillow.com/widgets/GetVersionedResource.htm?path=/static/logos/Zillowlogo_150x40.gif" width="150" height="40" alt="Zillow Real Estate Search" />' + 
+      '<BR><a href="' + d.forSale + '" target="_new">' + "See " + d.Zip5 + 
+      " Real Estate on Zillow</a>";
   });
 
 
 // Load the station data. When the data comes back, create an overlay.
-d3.json("sat_schools.json", function(data) {
+d3.json("sat_schools_zillow.json", function(data) {
   var overlay = new google.maps.OverlayView();
 
   // Add the container when the overlay is added to the map.

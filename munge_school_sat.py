@@ -9,6 +9,10 @@ import numpy as np
 import pandas as pd
 
 
+def zip5(zip):
+    return zip[0:5]
+
+
 def make_float(d):
     try:
         return np.float(d)
@@ -31,6 +35,8 @@ sat_schools = pd.merge(sat[['NUMTSTTAKR', 'AVGSCR']],
                             'Zip', 'State', 'Latitude', 'Longitude']],
                             how='inner',
                             left_index=True, right_index=True)
+
+sat_schools['Zip5'] = sat_schools.Zip.map(zip5)
 
 #FIXME some schools do not have Lat/Long.
 sat_schools.to_json('sat_schools.json', orient='records')
