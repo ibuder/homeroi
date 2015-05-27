@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+    <script type="text/javascript" src="https://raw.githubusercontent.com/Caged/d3-tip/v0.6.7/index.js"></script>
+    <style type="text/css">
+
+html, body, #map {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.schools, .schools svg {
+  position: absolute;
+}
+
+.schools svg {
+  width: 120px;
+  height: 20px;
+  padding-right: 100px;
+  font: 10px sans-serif;
+}
+
+.schools circle {
+  fill: brown;
+  stroke: black;
+  stroke-width: 1.5px;
+}
+
+
+.d3-tip {
+  line-height: 1;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
+
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script type="text/javascript">
+
+// Create the Google Map…
+var map = new google.maps.Map(d3.select("#map").node(), {
+  zoom: 12,
+  center: new google.maps.LatLng(37.76487, -122.41948),
+  mapTypeId: google.maps.MapTypeId.ROADMAP
+});
+
+var tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset([-10, 0])
+  .html(function(d) {
+    return d.School + "<BR>Average SAT score: " + d.AVGSCR + 
+      "<BR>Median home value: $" + d.homeValueIndex + 
+      '<img src="http://www.zillow.com/widgets/GetVersionedResource.htm?path=/static/logos/Zillowlogo_150x40.gif" width="150" height="40" alt="Zillow Real Estate Search" />' + 
+      '<BR><a href="' + d.forSale + '" target="_new">' + "See " + d.Zip5 + 
+      " Real Estate on Zillow</a>";
+  });
+
+
+// Load the station data. When the data comes back, create an overlay.
+d3.json("sat_schools_zillow.json", function(data) {
+  var overlay = new google.maps.OverlayView();
+
+  // Add the container when the overlay is added to the map.
+  overlay.onAdd = function() {
+    //overlayMouseTarget needed for layer to interact with mouse
+    var layer = d3.select(this.getPanes().overlayMouseTarget).append("div")
+        .attr("class", "schools");
+
+    // Draw each marker as a separate SVG element.
+    // We could use a single SVG, but what size would it have?
+    overlay.draw = function() {
+      var projection = this.getProjection(),
+          padding = 10;
+
+      var marker = layer.selectAll("svg")
+          .data(data)
+          .each(transform) // update existing markers
+        .enter().append("svg:svg")
+          .each(transform)
+          .attr("class", "marker");
+
+      marker.call(tip);
+
+      // Add a circle.
+      marker.append("svg:circle")
+          .attr("r", 6)
+          .attr("cx", padding)
+          .attr("cy", padding)
+          .on('mouseover', tip.show)
+          .on('click', tip.hide);
+
+      function transform(d) {
+        d = new google.maps.LatLng(d.Latitude, d.Longitude);
+        d = projection.fromLatLngToDivPixel(d);
+        return d3.select(this)
+            .style("left", (d.x - padding) + "px")
+            .style("top", (d.y - padding) + "px");
+      }
+    };
+  };
+
+  // Bind our overlay to the map…
+  overlay.setMap(map);
+});
+
+    </script>
+  </body>
+</html>
