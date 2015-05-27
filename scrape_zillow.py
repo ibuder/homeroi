@@ -33,7 +33,10 @@ def get_zillow_demographics_one(zip_):
 sat_schools = pd.io.json.read_json('sat_schools.json', orient='records')
 # Zillow has API request limit, so try to minimize calls
 zipcodes = np.unique(sat_schools.Zip5)
-#zipcodes = list(zipcodes[0:3]) +  [95057] # testing
+
+#FIXME make line below into unit test
+#zipcodes = list(zipcodes[0:3]) + [95057]  # testing
+
 zillow_demographics = [get_zillow_demographics_one(zip_) for zip_ in zipcodes]
 zillow_demographics = pd.DataFrame(zillow_demographics)
 zillow_demographics.to_json('zillow_demographics.json', orient='records')

@@ -1,3 +1,4 @@
 add search box (example in "google maps api with search box")
 remove street view
 don't plot all schools at low zoom
+make it work on mobile
