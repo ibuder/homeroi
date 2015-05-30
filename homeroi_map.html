@@ -77,7 +77,13 @@ var tip = d3.tip()
   .attr('class', 'd3-tip')
   .offset([-10, 0])
   .html(function(d) {
-    return d.School + "<BR>Average SAT score: " + d.AVGSCR + 
+    var score_string = "";
+    if (d.AVGSCR) {
+      score_string = "<BR>Average SAT score: " + 
+        Math.round(d.AVGSCR - d.AVGSCR_SE) + 
+        "&#8211;" + Math.round(d.AVGSCR + d.AVGSCR_SE);
+    }
+    return d.School + score_string +
       "<BR>Median home value: $" + d.homeValueIndex + 
       '<img src="http://www.zillow.com/widgets/GetVersionedResource.htm?path=/static/logos/Zillowlogo_150x40.gif" width="150" height="40" alt="Zillow Real Estate Search" />' + 
       '<BR><a href="' + d.forSale + '" target="_new">' + "See " + d.Zip5 + 

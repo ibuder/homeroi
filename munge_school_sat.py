@@ -24,13 +24,17 @@ def make_float(d):
 sat = pd.io.excel.read_excel('sat1314.xls', sheetname=1, index_col=0)
 sat = sat[sat.RTYPE == u'S']  # only use schools (not districts/counties)
 sat['AVGSCR'] = (sat.AVGSCRMATH.map(make_float) +
-                    sat.AVGSCRREAD.map(make_float) +
-                    sat.AVGSCRWRIT.map(make_float))
+                 sat.AVGSCRREAD.map(make_float) +
+                 sat.AVGSCRWRIT.map(make_float))
+
+# SAT total score standard deviation is 322 for 2014
+# (https://secure-media.collegeboard.org/digitalServices/pdf/sat/sat-percentile-ranks-composite-crit-reading-math-writing-2014.pdf)
+sat['AVGSCR_SE'] = 322/np.sqrt(sat.NUMTSTTAKR)
 
 #  pubschls.xls first column is the school code (CDS)
 schools = pd.io.excel.read_excel('pubschls.xls', index_col=0)
 
-sat_schools = pd.merge(sat[['NUMTSTTAKR', 'AVGSCR']],
+sat_schools = pd.merge(sat[['NUMTSTTAKR', 'AVGSCR', 'AVGSCR_SE']],
                             schools[['School', 'Street', 'City',
                             'Zip', 'State', 'Latitude', 'Longitude']],
                             how='inner',
